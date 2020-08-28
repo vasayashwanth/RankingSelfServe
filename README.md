@@ -1,2 +1,2 @@
-# RankingSelfServe
-Created with CodeSandbox
+Ranking Self serve project
+To make config changes easier
