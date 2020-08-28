@@ -1,0 +1,92 @@
+.App {
+  font-family: sans-serif;
+  text-align: center;
+  align-content: center;
+}
+/* #App > * {
+  margin: 10px;
+  padding: 10px 10px 10px 10px;
+} */
+input[type="text"] {
+  margin: 5px;
+  margin-top: 1px;
+}
+input[type="radio"] {
+  margin-left: 15px;
+}
+label {
+  margin: 5px;
+  margin-bottom: 1px;
+  font-weight: 400;
+}
+input[type="checkbox"] {
+  /* width: 5%; */
+  margin: 5px;
+}
+button {
+  /* border: 1px solid pink; */
+  margin: 5px;
+  margin-left: 15px;
+  margin-top: 15px;
+}
+.input-text-container {
+  display: flex;
+  flex-direction: column;
+  /* border: 1px solid pink; */
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.configLine {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  /* border: 1px solid pink; */
+  margin-left: auto;
+  flex-flow: row wrap;
+  align-items: flex-end;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+/* .sidebar {
+  flex-flow: nowrap;
+  border: 1px solid blue;
+} */
+.input-label {
+  font-size: 14px;
+}
+.input-text-field {
+  border-color: rgba(210, 210, 210, 0.5);
+  border-width: 1px;
+  border-radius: 5px;
+}
+
+.input-text-field:active {
+  border-color: rgba(210, 210, 210, 0.95);
+}
+
+textarea {
+  vertical-align: bottom;
+  width: 750px;
+  margin: 5px;
+}
+
+.headings {
+  font-size: 20px;
+  /* font-family: "Segoe UI", Arial, sans-serif; */
+  font-weight: 600;
+}
+.flex-column {
+  margin-top: 15px;
+  margin-right: 15px;
+  margin-left: 15px;
+  /* background-color: rgba(210, 210, 210, 0.95); */
+  /* border: 1px solid red; */
+  /* : 1px solid red; */
+  flex-flow: nowrap;
+  /* width: 20px; */
+}
+.horizontal-tabs {
+  /* border: 1px solid pink; */
+  margin-top: 15px;
+}
