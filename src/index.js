@@ -7,7 +7,7 @@ const rootElement = document.getElementById("root");
 ReactDOM.render(
   <React.StrictMode>
     <nav className="navbar navbar-dark bg-primary">
-      <span className="headings">Navbar</span>
+      <span className>Navbar</span>
     </nav>
     <VerticalTabs />
   </React.StrictMode>,

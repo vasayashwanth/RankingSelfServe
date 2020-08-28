@@ -9,7 +9,8 @@ export default function ContextConfidence() {
         <AddNew />
       </Tab>
       <Tab eventKey="2" className="headings" title="Query">
-        <label>yash</label>
+        <br />
+        <h3>Coming Soon!!!</h3>
       </Tab>
     </Tabs>
   );
