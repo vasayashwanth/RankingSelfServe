@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import StructuredEditor from "./StructuredEditor";
 import TextEditor from "./TextEditor";
-
+import $ from "jquery";
 import * as constants from "./ContextConfidenceConstants";
 
 function CreateUUID() {
@@ -27,9 +27,14 @@ export default function AddNew() {
   const [groupState, setGroupState] = useState([...initialGroupState]);
   const [rowState, setRowState] = useState([...initialRowState]);
   const [structured, setStructured] = React.useState(true);
+  const [commitMessage, setCommitMessage] = React.useState(
+    "This is a sample commit message"
+  );
   const [isCommited, setIsCommited] = React.useState(false);
   const [isPR, setIsPR] = React.useState(true);
+
   const [commitResult, setCommitResult] = React.useState(null);
+  const [waitingResult, setWaitingResult] = React.useState(null);
 
   //For tabs in textarea
   useEffect(() => {
@@ -317,69 +322,31 @@ export default function AddNew() {
   useEffect(() => {
     if (isCommited) {
       // POST request using fetch inside useEffect React hook
-      const requestOptions = {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          accessToken:
-            "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Im9PdmN6NU1fN3AtSGpJS2xGWHo5M3VfVjBabyJ9.eyJuYW1laWQiOiJlODcyNTZjZi04ZDAyLTYyMzMtODZkNS0xMWZjNDBlMTIyYmQiLCJzY3AiOiJ2c28uY29kZV9tYW5hZ2UiLCJhdWkiOiIzOWFjOGUxMy1iMWVhLTQ4NzgtOGQ1MS1lZGUwYzRhNTMwMTQiLCJhcHBpZCI6ImUxN2Q2ZmQ3LTc3YzItNDBlZS1iNzg3LWJiNjI1ZGNhOTU0OCIsImlzcyI6ImFwcC52c3Rva2VuLnZpc3VhbHN0dWRpby5jb20iLCJhdWQiOiJhcHAudnN0b2tlbi52aXN1YWxzdHVkaW8uY29tIiwibmJmIjoxNTk4ODc3NTU0LCJleHAiOjE1OTg4ODExNTR9.tYdo2Q8POWKwy0KZgpoZvLqdBe4uvh_O_-4ynVceKHNPNAuMmeaJ-RC1qaoQBajCJKOq1gsEV7iBVnYhSZNv2kJukN7-ayvtTaBvJ_84FSIhsAsXlHxX_oEdnAdGo3jIri9u957ODqM7KC5RkDZhE1U-E7o4q3GvAZdvaXP7Cp6AiWgDD9jxpEqgjors0CuIn8V3XyYFq_FahpApnabmu6bj4EemM0M7x5bARJRpatjMejOIkXf3W5dgfIZ_Metj_4dyG1SSFwDvBn6pe_FcNfAoM4-fH41OFV1zjarcIbWlRYX20qoUekhuCp1tP2bxAVTLNR-8BumN440_ZNlmLQ",
-          GitParameters: {
-            gitRepoName: "ConfigDataDummy",
-            branchName: "{{current_timestamp}}",
-            createPullRequest: true,
-            commitMessage: "Commit at {{current_timestamp}}"
-          },
-          ContextConfidenceConfig: {
-            configLines: [
-              {
-                pipelines: ["p0", "p0u"],
-                id: "98fa5fd9-f61d-4670-9739-26a5ecd1e321",
-                market: "*",
-                context: 123,
-                predicate: "default",
-                language: "default",
-                confidence: 0.35,
-                contextname: null,
-                iscomment: true,
-                comment: ";enable freebase for p0 markets"
-              },
-              {
-                pipelines: ["p0", "p0u"],
-                id: "3b9cdc46-7ad0-4518-a72a-4e7e6f8d2515",
-                market: "en-gb",
-                context: "1498",
-                predicate: "default",
-                language: "default",
-                confidence: 0.35,
-                contextname: "freebase",
-                iscomment: false,
-                comment: ";"
-              },
-              {
-                pipelines: ["p0", "p0u"],
-                id: "aa78294b-e2c8-4944-bdbf-6d86a4d0146a",
-                market: "en-ca",
-                context: "1498",
-                predicate: "default",
-                language: "default",
-                confidence: 0.35,
-                contextname: "freebase",
-                iscomment: false,
-                comment: ";"
-              }
-            ]
-          }
-        })
+      let data = {
+        accessToken:
+          "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Im9PdmN6NU1fN3AtSGpJS2xGWHo5M3VfVjBabyJ9.eyJuYW1laWQiOiJlODcyNTZjZi04ZDAyLTYyMzMtODZkNS0xMWZjNDBlMTIyYmQiLCJzY3AiOiJ2c28uY29kZV9tYW5hZ2UiLCJhdWkiOiI3MDM2ZDc2MS01ZWYwLTRiOTQtYTE2Ni03ODA3NjRjMzU3ODEiLCJhcHBpZCI6ImUxN2Q2ZmQ3LTc3YzItNDBlZS1iNzg3LWJiNjI1ZGNhOTU0OCIsImlzcyI6ImFwcC52c3Rva2VuLnZpc3VhbHN0dWRpby5jb20iLCJhdWQiOiJhcHAudnN0b2tlbi52aXN1YWxzdHVkaW8uY29tIiwibmJmIjoxNTk4ODg1NjgxLCJleHAiOjE1OTg4ODkyODF9.0t5nJl3_ksHpL7z-8C-KfhTJFyZChY676paAJBe02uuZGn8ODvsei6aHjxSMrHio5P35wtjev3nn2NiTKWccJS6i3vy-EZ8gC9VtaM5ItaJMCvMOo9xOuSSm2Sr1c_qbrndnwMuFwE8bVhTF2v-uNygVs2x4sc-xvPLQ8DfUFhxdEQPMy4tNBHV__AYwWOETmy5Us5rgvEIK5j-cmk3t2xsBpE70jP-gmw7n3KlldcKbs-iwm7LVK6z0zl-GWgZPkEfO07DOffI1itPdEBVX6qV6DuDwjmYMPs1wFYJgUlBLNDp92KYV-XTMZ8v_zMYWugGMJEGTkV3k6b-tKqmp2w",
+        GitParameters: {
+          gitRepoName: "ConfigDataDummy",
+          branchName: getCurrentTimeStamp(),
+          createPullRequest: isPR,
+          commitMessage: commitMessage
+        },
+        ContextConfidenceConfig: {
+          configLines: rowState
+        }
       };
-      fetch(
+      setWaitingResult("Submitting...");
+      $.post(
         "https://rankingselfserve.azurewebsites.net/Git/CommitToGit",
-        requestOptions
-      )
-        .then((response) => response.json())
-        .then((data) => setCommitResult(data));
+        data,
+        function (returnData, status) {
+          setWaitingResult(null);
+          setCommitResult(returnData);
+        }
+      );
     }
-    // empty dependency array means this effect will only run once (like componentDidMount in classes)
   }, [isCommited]);
+
   return (
     <>
       <div>
@@ -449,8 +416,16 @@ export default function AddNew() {
       <br />
       <br />
       <div className="configLine">
-        <label for="branch">Branch Name</label>
-        <input type="text" id="branch" value={getCurrentTimeStamp()} />
+        <label htmlFor="commitMessage">Commit Message</label>
+        <input
+          type="text"
+          id="commitMessage"
+          size={
+            commitMessage === null ? 10 : Math.max(10, commitMessage.length + 1)
+          }
+          onChange={(e) => setCommitMessage(e.target.value)}
+          value={commitMessage}
+        />
 
         <button
           className="btn btn-primary"
@@ -476,7 +451,27 @@ export default function AddNew() {
           </label>
         </div>
       </div>
-      <div>{commitResult ? <label>Result:{commitResult}</label> : null}</div>
+      <div>{waitingResult}</div>
+      <div>
+        {commitResult ? (
+          <>
+            <label>CommitMessage:{commitResult.CommitMessage}</label>
+            <br />
+            <label>LatestCommit:{commitResult.LatestCommit}</label>
+            <br />
+            <label>
+              PullRequest Url:
+              <a href={commitResult.PullRequestUrl}>
+                {commitResult.PullRequestUrl}
+              </a>
+            </label>
+            <br />
+            <label>TargetBranch:{commitResult.TargetBranch}</label>
+            <br />
+          </>
+        ) : null}
+      </div>
+      {/* <br />
       <br />
       <br />
       <br />
@@ -496,8 +491,7 @@ export default function AddNew() {
       <br />
       <br />
       <br />
-      <br />
-      <React.Fragment>{JSON.stringify(rowState, null, 2)}</React.Fragment>
+      <React.Fragment>{JSON.stringify(rowState, null, 2)}</React.Fragment> */}
     </>
   );
 }
