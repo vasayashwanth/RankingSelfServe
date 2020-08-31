@@ -27,6 +27,9 @@ export default function AddNew() {
   const [groupState, setGroupState] = useState([...initialGroupState]);
   const [rowState, setRowState] = useState([...initialRowState]);
   const [structured, setStructured] = React.useState(true);
+  const [isCommited, setIsCommited] = React.useState(false);
+  const [isPR, setIsPR] = React.useState(true);
+  const [commitResult, setCommitResult] = React.useState(null);
 
   //For tabs in textarea
   useEffect(() => {
@@ -211,6 +214,7 @@ export default function AddNew() {
     setGroupState([...initialGroupState]);
     setRowState([...initialRowState]);
     setStructured(true);
+    setIsCommited(false);
   }
 
   //Row handlers
@@ -293,6 +297,89 @@ export default function AddNew() {
     items[index] = item;
     setRowState(items);
   }
+  function getCurrentTimeStamp() {
+    let d = new Date();
+    let current_timestamp =
+      d.getDate() +
+      "-" +
+      d.getMonth() +
+      "-" +
+      d.getFullYear() +
+      "_" +
+      d.getHours() +
+      "_" +
+      d.getMinutes() +
+      "_" +
+      d.getSeconds();
+    return current_timestamp;
+  }
+
+  useEffect(() => {
+    if (isCommited) {
+      // POST request using fetch inside useEffect React hook
+      const requestOptions = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          accessToken:
+            "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Im9PdmN6NU1fN3AtSGpJS2xGWHo5M3VfVjBabyJ9.eyJuYW1laWQiOiJlODcyNTZjZi04ZDAyLTYyMzMtODZkNS0xMWZjNDBlMTIyYmQiLCJzY3AiOiJ2c28uY29kZV9tYW5hZ2UiLCJhdWkiOiIzOWFjOGUxMy1iMWVhLTQ4NzgtOGQ1MS1lZGUwYzRhNTMwMTQiLCJhcHBpZCI6ImUxN2Q2ZmQ3LTc3YzItNDBlZS1iNzg3LWJiNjI1ZGNhOTU0OCIsImlzcyI6ImFwcC52c3Rva2VuLnZpc3VhbHN0dWRpby5jb20iLCJhdWQiOiJhcHAudnN0b2tlbi52aXN1YWxzdHVkaW8uY29tIiwibmJmIjoxNTk4ODc3NTU0LCJleHAiOjE1OTg4ODExNTR9.tYdo2Q8POWKwy0KZgpoZvLqdBe4uvh_O_-4ynVceKHNPNAuMmeaJ-RC1qaoQBajCJKOq1gsEV7iBVnYhSZNv2kJukN7-ayvtTaBvJ_84FSIhsAsXlHxX_oEdnAdGo3jIri9u957ODqM7KC5RkDZhE1U-E7o4q3GvAZdvaXP7Cp6AiWgDD9jxpEqgjors0CuIn8V3XyYFq_FahpApnabmu6bj4EemM0M7x5bARJRpatjMejOIkXf3W5dgfIZ_Metj_4dyG1SSFwDvBn6pe_FcNfAoM4-fH41OFV1zjarcIbWlRYX20qoUekhuCp1tP2bxAVTLNR-8BumN440_ZNlmLQ",
+          GitParameters: {
+            gitRepoName: "ConfigDataDummy",
+            branchName: "{{current_timestamp}}",
+            createPullRequest: true,
+            commitMessage: "Commit at {{current_timestamp}}"
+          },
+          ContextConfidenceConfig: {
+            configLines: [
+              {
+                pipelines: ["p0", "p0u"],
+                id: "98fa5fd9-f61d-4670-9739-26a5ecd1e321",
+                market: "*",
+                context: 123,
+                predicate: "default",
+                language: "default",
+                confidence: 0.35,
+                contextname: null,
+                iscomment: true,
+                comment: ";enable freebase for p0 markets"
+              },
+              {
+                pipelines: ["p0", "p0u"],
+                id: "3b9cdc46-7ad0-4518-a72a-4e7e6f8d2515",
+                market: "en-gb",
+                context: "1498",
+                predicate: "default",
+                language: "default",
+                confidence: 0.35,
+                contextname: "freebase",
+                iscomment: false,
+                comment: ";"
+              },
+              {
+                pipelines: ["p0", "p0u"],
+                id: "aa78294b-e2c8-4944-bdbf-6d86a4d0146a",
+                market: "en-ca",
+                context: "1498",
+                predicate: "default",
+                language: "default",
+                confidence: 0.35,
+                contextname: "freebase",
+                iscomment: false,
+                comment: ";"
+              }
+            ]
+          }
+        })
+      };
+      fetch(
+        "https://rankingselfserve.azurewebsites.net/Git/CommitToGit",
+        requestOptions
+      )
+        .then((response) => response.json())
+        .then((data) => setCommitResult(data));
+    }
+    // empty dependency array means this effect will only run once (like componentDidMount in classes)
+  }, [isCommited]);
   return (
     <>
       <div>
@@ -357,6 +444,39 @@ export default function AddNew() {
           </>
         )}
       </div>
+      <br />
+      <br />
+      <br />
+      <br />
+      <div className="configLine">
+        <label for="branch">Branch Name</label>
+        <input type="text" id="branch" value={getCurrentTimeStamp()} />
+
+        <button
+          className="btn btn-primary"
+          disabled={isCommited}
+          onClick={() => {
+            setIsCommited(true);
+          }}
+        >
+          Commit
+        </button>
+        <div className="custom-control custom-switch">
+          <input
+            className="custom-control-input"
+            id={"pr"}
+            name={"pr"}
+            type="checkbox"
+            onChange={() => setIsPR((s) => !s)}
+            checked={isPR}
+          />
+
+          <label className="custom-control-label" htmlFor={"pr"}>
+            Create a Pull Request
+          </label>
+        </div>
+      </div>
+      <div>{commitResult ? <label>Result:{commitResult}</label> : null}</div>
       <br />
       <br />
       <br />
