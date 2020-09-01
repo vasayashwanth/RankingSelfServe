@@ -29,16 +29,7 @@ export default function AddNew() {
   const [rowState, setRowState] = useState([...initialRowState]);
   const [structured, setStructured] = React.useState(true);
 
-  const gitParams = {
-    commitMessage: "This is a sample commit message",
-    isCommited: false,
-    isPullRequestNeeded: true,
-    commitResult: null,
-    waitingResult: null,
-    gitRepoName: "ConfigDataDummy"
-  };
-
-  const [gitState, setGitState] = useState(gitParams);
+  const [gitState, setGitState] = useState(constants.gitParams);
 
   function getCurrentTimeStamp() {
     let d = new Date();
@@ -275,6 +266,7 @@ export default function AddNew() {
     setGroupState([...initialGroupState]);
     setRowState([...initialRowState]);
     setStructured(true);
+    setGitState({ ...constants.gitParams });
   }
 
   //Row handlers

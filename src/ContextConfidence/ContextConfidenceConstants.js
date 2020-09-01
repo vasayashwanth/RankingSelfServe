@@ -38,3 +38,12 @@ export const defaultGroupValues = {
   pipelines: [...allPipelines],
   lines: [defaultGroupLine]
 };
+
+export const gitParams = {
+  commitMessage: "This is a sample commit message",
+  isCommited: false,
+  isPullRequestNeeded: true,
+  commitResult: null,
+  waitingResult: null,
+  gitRepoName: "ConfigDataDummy"
+};
