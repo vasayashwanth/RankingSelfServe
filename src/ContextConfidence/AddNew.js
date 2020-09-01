@@ -45,10 +45,7 @@ export default function AddNew() {
   ]);
   const [structured, setStructured] = useLocalStorageState("structured", true);
 
-  const [gitState, setGitState] = useLocalStorageState(
-    "gitState",
-    constants.gitParams
-  );
+  const [gitState, setGitState] = useState(constants.gitParams);
 
   function getCurrentTimeStamp() {
     let d = new Date();
