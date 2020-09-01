@@ -14,6 +14,18 @@ function CreateUUID() {
 }
 
 export default function AddNew() {
+  function useLocalStorageState(key, defaultValue = "") {
+    const [state, setState] = React.useState(
+      () => JSON.parse(window.localStorage.getItem(key)) ?? defaultValue
+    );
+
+    React.useEffect(() => {
+      window.localStorage.setItem(key, JSON.stringify(state));
+    }, [key, state]);
+
+    return [state, setState];
+  }
+
   const initialRowState = [
     { ...constants.defaultRowValues, id: CreateUUID(), iscomment: true },
     { ...constants.defaultRowValues, id: CreateUUID() }
@@ -25,11 +37,18 @@ export default function AddNew() {
       lines: [{ ...constants.defaultGroupLine, id: CreateUUID() }]
     }
   ];
-  const [groupState, setGroupState] = useState([...initialGroupState]);
-  const [rowState, setRowState] = useState([...initialRowState]);
-  const [structured, setStructured] = React.useState(true);
+  const [groupState, setGroupState] = useLocalStorageState("groupState", [
+    ...initialGroupState
+  ]);
+  const [rowState, setRowState] = useLocalStorageState("rowState", [
+    ...initialRowState
+  ]);
+  const [structured, setStructured] = useLocalStorageState("structured", true);
 
-  const [gitState, setGitState] = useState(constants.gitParams);
+  const [gitState, setGitState] = useLocalStorageState(
+    "gitState",
+    constants.gitParams
+  );
 
   function getCurrentTimeStamp() {
     let d = new Date();
@@ -60,7 +79,7 @@ export default function AddNew() {
 
       let data = {
         AccessToken:
-          "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Im9PdmN6NU1fN3AtSGpJS2xGWHo5M3VfVjBabyJ9.eyJuYW1laWQiOiJlODcyNTZjZi04ZDAyLTYyMzMtODZkNS0xMWZjNDBlMTIyYmQiLCJzY3AiOiJ2c28uY29kZV9tYW5hZ2UiLCJhdWkiOiJkMmZjOWZhNi0wMTQxLTRmYTktODJkMS0yNzkxNTI0NTMwOWEiLCJhcHBpZCI6ImUxN2Q2ZmQ3LTc3YzItNDBlZS1iNzg3LWJiNjI1ZGNhOTU0OCIsImlzcyI6ImFwcC52c3Rva2VuLnZpc3VhbHN0dWRpby5jb20iLCJhdWQiOiJhcHAudnN0b2tlbi52aXN1YWxzdHVkaW8uY29tIiwibmJmIjoxNTk4OTQxNTY4LCJleHAiOjE1OTg5NDUxNjh9.XApBYzBUIX7Lhx-ZiYcfztC-qyMT5ZcsjAsT0rp1zGefQeCYIzlAXp2E5FDxXCJsdpqTybwhWh4sEWL89LxKw-cEbeTfchC7x-hYsnuCT4Y9T1Kpusr7vWsehyqjAzvxvmk0K4-845rM7dOKt1xFSCAXMBJe39HsH2T2A--9XB299g43DwJcDJB3imMYIJsxyGPBbCNkT90R5G8-H6T77bGcDofZuLcTPeubvXv_0LNGxINA6_FxfEiMUlmtwNTKoz7oYYhP859QK2m663cAvuAqMNhyOlZSqWIyCQTIOZpLHUSGMf2Yihh33K7SttyD2u0A2pGeGVqfD2L53P5Yrw",
+          "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Im9PdmN6NU1fN3AtSGpJS2xGWHo5M3VfVjBabyJ9.eyJuYW1laWQiOiJlODcyNTZjZi04ZDAyLTYyMzMtODZkNS0xMWZjNDBlMTIyYmQiLCJzY3AiOiJ2c28uY29kZV9tYW5hZ2UiLCJhdWkiOiJjNTg3ZjgyYi02NmRkLTQyNTAtOGQ5ZS0yMzdlYzU1MzNiMjQiLCJhcHBpZCI6ImUxN2Q2ZmQ3LTc3YzItNDBlZS1iNzg3LWJiNjI1ZGNhOTU0OCIsImlzcyI6ImFwcC52c3Rva2VuLnZpc3VhbHN0dWRpby5jb20iLCJhdWQiOiJhcHAudnN0b2tlbi52aXN1YWxzdHVkaW8uY29tIiwibmJmIjoxNTk4OTUwMDc3LCJleHAiOjE1OTg5NTM2Nzd9.NohT3A0Cb3JQAH4o3Zluf-6Q1HudfFQRqs77zt2Dy8xp80iO44_KSKjcLwplHGjk23Ep-m3zGnFLsOb_54kiHWhnHdjUiTeBsqd_osR8m0gKAoIem9mEefcgTvil1ONHZJX9TcGir7XTk3gWueeRdonvFTOv1l2xP2VAB0oE5fqJRQ4NZ7xWtmWEhgelAWbuejNe1745QTxRGe--hAaJZ1nw9QLIBdR2L5kssjVOhuYQBgKocRwMWGm_juC0V1KP4QihkRInu62H5Bilb7eWgBnSlHw1ZdezR7Eyz4oTj_08GV6odvTHrcc72QZ_S0642vwix8iai2uCkuDHzdNUVg",
         GitParameters: {
           gitRepoName: gitState.gitRepoName,
           branchName: getCurrentTimeStamp(),
