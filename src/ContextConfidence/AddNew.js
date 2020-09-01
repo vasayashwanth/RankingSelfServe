@@ -3,6 +3,7 @@ import StructuredEditor from "./StructuredEditor";
 import TextEditor from "./TextEditor";
 import $ from "jquery";
 import * as constants from "./ContextConfidenceConstants";
+// import Cookie from "js-cookie";
 
 function CreateUUID() {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
@@ -27,14 +28,69 @@ export default function AddNew() {
   const [groupState, setGroupState] = useState([...initialGroupState]);
   const [rowState, setRowState] = useState([...initialRowState]);
   const [structured, setStructured] = React.useState(true);
-  const [commitMessage, setCommitMessage] = React.useState(
-    "This is a sample commit message"
-  );
-  const [isCommited, setIsCommited] = React.useState(false);
-  const [isPR, setIsPR] = React.useState(true);
 
-  const [commitResult, setCommitResult] = React.useState(null);
-  const [waitingResult, setWaitingResult] = React.useState(null);
+  const gitParams = {
+    commitMessage: "This is a sample commit message",
+    isCommited: false,
+    isPullRequestNeeded: true,
+    commitResult: null,
+    waitingResult: null,
+    gitRepoName: "ConfigDataDummy"
+  };
+
+  const [gitState, setGitState] = useState(gitParams);
+
+  function getCurrentTimeStamp() {
+    let d = new Date();
+    let current_timestamp =
+      d.getDate() +
+      "-" +
+      d.getMonth() +
+      "-" +
+      d.getFullYear() +
+      "_" +
+      d.getHours() +
+      "_" +
+      d.getMinutes() +
+      "_" +
+      d.getSeconds();
+    return current_timestamp;
+  }
+
+  useEffect(() => {
+    if (gitState.isCommited) {
+      // POST request using fetch inside useEffect React hook
+
+      // Cookie.set(
+      //   "AccessToken",
+      //   "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Im9PdmN6NU1fN3AtSGpJS2xGWHo5M3VfVjBabyJ9.eyJuYW1laWQiOiJlODcyNTZjZi04ZDAyLTYyMzMtODZkNS0xMWZjNDBlMTIyYmQiLCJzY3AiOiJ2c28uY29kZV9tYW5hZ2UiLCJhdWkiOiI3YWNmYjQzNS00NTM0LTQ3ZDAtYTY4Ny1lMmQyYWFmMmZmZmMiLCJhcHBpZCI6ImUxN2Q2ZmQ3LTc3YzItNDBlZS1iNzg3LWJiNjI1ZGNhOTU0OCIsImlzcyI6ImFwcC52c3Rva2VuLnZpc3VhbHN0dWRpby5jb20iLCJhdWQiOiJhcHAudnN0b2tlbi52aXN1YWxzdHVkaW8uY29tIiwibmJmIjoxNTk4OTM5MzU0LCJleHAiOjE1OTg5NDI5NTR9.jrbgzMqMukQaAZBLWpWzdsZpupIxYbAQGhambya_RFfJPbsbBf_CJGj5t44jWT5Su3BL6nQZIGCLJLnXd-zkncLcpqkyC0qBByAn_WP-sSe4LNz6C7cSTOyW97kJepVfIzC7X3xP4oQBbeI1X9jqkzdsbgLeM34sFL_3npueA8n8YJFBOMDTMjAJk6aL4vwqW3NAyTiBOBSiKNRt_ULKwnc3cLczOzhyFPyJB06LZTSVHoUfCTYYtAB5mAUixXYh3TGbJq0KpzRf6ulrub2aYH93QLI2if5Jz_k7TwinqH9m354OkoYKJaQao9nkIllzoCnTLDf6_EKcYjgRojV6Bg",
+      //   { sameSite: "none" }
+      // );
+
+      let data = {
+        AccessToken:
+          "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Im9PdmN6NU1fN3AtSGpJS2xGWHo5M3VfVjBabyJ9.eyJuYW1laWQiOiJlODcyNTZjZi04ZDAyLTYyMzMtODZkNS0xMWZjNDBlMTIyYmQiLCJzY3AiOiJ2c28uY29kZV9tYW5hZ2UiLCJhdWkiOiJkMmZjOWZhNi0wMTQxLTRmYTktODJkMS0yNzkxNTI0NTMwOWEiLCJhcHBpZCI6ImUxN2Q2ZmQ3LTc3YzItNDBlZS1iNzg3LWJiNjI1ZGNhOTU0OCIsImlzcyI6ImFwcC52c3Rva2VuLnZpc3VhbHN0dWRpby5jb20iLCJhdWQiOiJhcHAudnN0b2tlbi52aXN1YWxzdHVkaW8uY29tIiwibmJmIjoxNTk4OTQxNTY4LCJleHAiOjE1OTg5NDUxNjh9.XApBYzBUIX7Lhx-ZiYcfztC-qyMT5ZcsjAsT0rp1zGefQeCYIzlAXp2E5FDxXCJsdpqTybwhWh4sEWL89LxKw-cEbeTfchC7x-hYsnuCT4Y9T1Kpusr7vWsehyqjAzvxvmk0K4-845rM7dOKt1xFSCAXMBJe39HsH2T2A--9XB299g43DwJcDJB3imMYIJsxyGPBbCNkT90R5G8-H6T77bGcDofZuLcTPeubvXv_0LNGxINA6_FxfEiMUlmtwNTKoz7oYYhP859QK2m663cAvuAqMNhyOlZSqWIyCQTIOZpLHUSGMf2Yihh33K7SttyD2u0A2pGeGVqfD2L53P5Yrw",
+        GitParameters: {
+          gitRepoName: gitState.gitRepoName,
+          branchName: getCurrentTimeStamp(),
+          createPullRequest: gitState.isPullRequestNeeded,
+          commitMessage: gitState.commitMessage
+        },
+        ContextConfidenceConfig: {
+          configLines: rowState
+        }
+      };
+      setGitState({ ...gitState, waitingResult: "Submitting..." });
+      $.post(
+        "https://rankingselfserve.azurewebsites.net/Git/CommitToGit",
+        data,
+        function (returnData, status) {
+          setGitState({ ...gitState, waitingResult: null });
+          setGitState({ ...gitState, commitResult: returnData });
+        }
+      );
+    }
+  }, [gitState.isCommited]);
 
   //For tabs in textarea
   useEffect(() => {
@@ -105,7 +161,7 @@ export default function AddNew() {
     let lines = item.split("\n");
     return lines.map((item, index) => {
       let lineItems = item.split("\t"); //.filter((item) => item);
-      console.log(lineItems);
+      //console.log(lineItems);
       let obj = {
         ...constants.defaultGroupLine,
         id: index >= prevLines.length ? CreateUUID() : prevLines[index].id
@@ -219,7 +275,6 @@ export default function AddNew() {
     setGroupState([...initialGroupState]);
     setRowState([...initialRowState]);
     setStructured(true);
-    setIsCommited(false);
   }
 
   //Row handlers
@@ -267,7 +322,7 @@ export default function AddNew() {
         constants.commentIdentifier + event.target.value;
     } else {
       //console.log("came here2");
-      console.log(event.target.value);
+      //console.log(event.target.value);
       if (event.target.value === "") item[prop.toLowerCase()] = null;
       else item[prop.toLowerCase()] = event.target.value;
     }
@@ -302,50 +357,6 @@ export default function AddNew() {
     items[index] = item;
     setRowState(items);
   }
-  function getCurrentTimeStamp() {
-    let d = new Date();
-    let current_timestamp =
-      d.getDate() +
-      "-" +
-      d.getMonth() +
-      "-" +
-      d.getFullYear() +
-      "_" +
-      d.getHours() +
-      "_" +
-      d.getMinutes() +
-      "_" +
-      d.getSeconds();
-    return current_timestamp;
-  }
-
-  useEffect(() => {
-    if (isCommited) {
-      // POST request using fetch inside useEffect React hook
-      let data = {
-        accessToken:
-          "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Im9PdmN6NU1fN3AtSGpJS2xGWHo5M3VfVjBabyJ9.eyJuYW1laWQiOiJlODcyNTZjZi04ZDAyLTYyMzMtODZkNS0xMWZjNDBlMTIyYmQiLCJzY3AiOiJ2c28uY29kZV9tYW5hZ2UiLCJhdWkiOiI3MDM2ZDc2MS01ZWYwLTRiOTQtYTE2Ni03ODA3NjRjMzU3ODEiLCJhcHBpZCI6ImUxN2Q2ZmQ3LTc3YzItNDBlZS1iNzg3LWJiNjI1ZGNhOTU0OCIsImlzcyI6ImFwcC52c3Rva2VuLnZpc3VhbHN0dWRpby5jb20iLCJhdWQiOiJhcHAudnN0b2tlbi52aXN1YWxzdHVkaW8uY29tIiwibmJmIjoxNTk4ODg1NjgxLCJleHAiOjE1OTg4ODkyODF9.0t5nJl3_ksHpL7z-8C-KfhTJFyZChY676paAJBe02uuZGn8ODvsei6aHjxSMrHio5P35wtjev3nn2NiTKWccJS6i3vy-EZ8gC9VtaM5ItaJMCvMOo9xOuSSm2Sr1c_qbrndnwMuFwE8bVhTF2v-uNygVs2x4sc-xvPLQ8DfUFhxdEQPMy4tNBHV__AYwWOETmy5Us5rgvEIK5j-cmk3t2xsBpE70jP-gmw7n3KlldcKbs-iwm7LVK6z0zl-GWgZPkEfO07DOffI1itPdEBVX6qV6DuDwjmYMPs1wFYJgUlBLNDp92KYV-XTMZ8v_zMYWugGMJEGTkV3k6b-tKqmp2w",
-        GitParameters: {
-          gitRepoName: "ConfigDataDummy",
-          branchName: getCurrentTimeStamp(),
-          createPullRequest: isPR,
-          commitMessage: commitMessage
-        },
-        ContextConfidenceConfig: {
-          configLines: rowState
-        }
-      };
-      setWaitingResult("Submitting...");
-      $.post(
-        "https://rankingselfserve.azurewebsites.net/Git/CommitToGit",
-        data,
-        function (returnData, status) {
-          setWaitingResult(null);
-          setCommitResult(returnData);
-        }
-      );
-    }
-  }, [isCommited]);
 
   return (
     <>
@@ -415,23 +426,28 @@ export default function AddNew() {
       <br />
       <br />
       <br />
+
       <div className="configLine">
         <label htmlFor="commitMessage">Commit Message</label>
         <input
           type="text"
           id="commitMessage"
           size={
-            commitMessage === null ? 10 : Math.max(10, commitMessage.length + 1)
+            gitState.commitMessage === null
+              ? 10
+              : Math.max(10, gitState.commitMessage.length + 1)
           }
-          onChange={(e) => setCommitMessage(e.target.value)}
-          value={commitMessage}
+          onChange={(e) =>
+            setGitState({ ...gitState, commitMessage: e.target.value })
+          }
+          value={gitState.commitMessage}
         />
 
         <button
           className="btn btn-primary"
-          disabled={isCommited}
+          disabled={gitState.isCommited}
           onClick={() => {
-            setIsCommited(true);
+            setGitState({ ...gitState, isCommited: true });
           }}
         >
           Commit
@@ -442,8 +458,13 @@ export default function AddNew() {
             id={"pr"}
             name={"pr"}
             type="checkbox"
-            onChange={() => setIsPR((s) => !s)}
-            checked={isPR}
+            onChange={() =>
+              setGitState({
+                ...gitState,
+                isPullRequestNeeded: !gitState.isPullRequestNeeded
+              })
+            }
+            checked={gitState.isPullRequestNeeded}
           />
 
           <label className="custom-control-label" htmlFor={"pr"}>
@@ -451,22 +472,22 @@ export default function AddNew() {
           </label>
         </div>
       </div>
-      <div>{waitingResult}</div>
+      <div>{gitState.waitingResult}</div>
       <div>
-        {commitResult ? (
+        {gitState.commitResult ? (
           <>
-            <label>CommitMessage:{commitResult.CommitMessage}</label>
+            <label>CommitMessage:{gitState.commitResult.CommitMessage}</label>
             <br />
-            <label>LatestCommit:{commitResult.LatestCommit}</label>
+            <label>LatestCommit:{gitState.commitResult.LatestCommit}</label>
             <br />
             <label>
               PullRequest Url:
-              <a href={commitResult.PullRequestUrl}>
-                {commitResult.PullRequestUrl}
+              <a href={gitState.commitResult.PullRequestUrl}>
+                {gitState.commitResult.PullRequestUrl}
               </a>
             </label>
             <br />
-            <label>TargetBranch:{commitResult.TargetBranch}</label>
+            <label>TargetBranch:{gitState.commitResult.TargetBranch}</label>
             <br />
           </>
         ) : null}
