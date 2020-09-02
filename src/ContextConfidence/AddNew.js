@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import StructuredEditor from "./StructuredEditor";
 import TextEditor from "./TextEditor";
-import $ from "jquery";
+// import $ from "jquery";
 import * as constants from "./ContextConfidenceConstants";
+
+import GitResult from "./GitResult";
 // import Cookie from "js-cookie";
 
 function CreateUUID() {
@@ -62,59 +64,45 @@ export default function AddNew() {
 
   const [gitState, setGitState] = useState(constants.gitParams);
 
-  // useEffect(() => {
-  //   overrideStructuredEditor();
-  // }, [groupState]);
   useEffect(() => {
     //async function CommitToGit() {
-    if (gitState.isCommited) {
-      // POST request using fetch inside useEffect React hook
+    function fetchData() {
+      if (gitState.isCommited) {
+        if (!structured) overrideStructuredEditor();
+        let data = {
+          AccessToken:
+            "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Im9PdmN6NU1fN3AtSGpJS2xGWHo5M3VfVjBabyJ9.eyJuYW1laWQiOiJlODcyNTZjZi04ZDAyLTYyMzMtODZkNS0xMWZjNDBlMTIyYmQiLCJzY3AiOiJ2c28uY29kZV9tYW5hZ2UiLCJhdWkiOiI0YTNlOWQzOS1mNmE4LTQ4YzQtYjg0Yy03MmU4MDQ3ZGU0MDgiLCJhcHBpZCI6ImUxN2Q2ZmQ3LTc3YzItNDBlZS1iNzg3LWJiNjI1ZGNhOTU0OCIsImlzcyI6ImFwcC52c3Rva2VuLnZpc3VhbHN0dWRpby5jb20iLCJhdWQiOiJhcHAudnN0b2tlbi52aXN1YWxzdHVkaW8uY29tIiwibmJmIjoxNTk5MDQxMTIwLCJleHAiOjE1OTkwNDQ3MjB9.BnRs4IaKuWi6ihdphTgWB_sgtoa_oPPEglYqYpYPzbLvCKRrh2B2LEilgq1msA-_ZT8fxlXtnEouXGPOsvcLZUsUgBonbCRk_BpkHXW0A2Tl8V77fXjUDu8NzNmbXpUq1TaoZwVVwWBKX2naTy_rZmnMB49PYCW0p4VReeJPneOBZ-e1bTzLPvLaCKpV2l5jhhfB82ly6CID7iMJ35C5fkW06ojCHhL9oPjWRNwItiW8tlI9Q3g4zt_2tmyj2FsvuvgO2swSiCq8rIyF8zLAMxUSiCGKRsPwMsLzbQqq3fPQC05BmJ27ohmcMWFUrQ3peBO8EtMNbRTMNnTdoGHaqg",
+          GitParameters: {
+            gitRepoName: gitState.gitRepoName,
+            branchName: getCurrentTimeStamp(),
+            createPullRequest: gitState.isPullRequestNeeded,
+            commitMessage: gitState.commitMessage
+          },
+          ContextConfidenceConfig: {
+            configLines: rowState
+          }
+        };
 
-      // Cookie.set(
-      //   "AccessToken",
-      //   "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Im9PdmN6NU1fN3AtSGpJS2xGWHo5M3VfVjBabyJ9.eyJuYW1laWQiOiJlODcyNTZjZi04ZDAyLTYyMzMtODZkNS0xMWZjNDBlMTIyYmQiLCJzY3AiOiJ2c28uY29kZV9tYW5hZ2UiLCJhdWkiOiI3YWNmYjQzNS00NTM0LTQ3ZDAtYTY4Ny1lMmQyYWFmMmZmZmMiLCJhcHBpZCI6ImUxN2Q2ZmQ3LTc3YzItNDBlZS1iNzg3LWJiNjI1ZGNhOTU0OCIsImlzcyI6ImFwcC52c3Rva2VuLnZpc3VhbHN0dWRpby5jb20iLCJhdWQiOiJhcHAudnN0b2tlbi52aXN1YWxzdHVkaW8uY29tIiwibmJmIjoxNTk4OTM5MzU0LCJleHAiOjE1OTg5NDI5NTR9.jrbgzMqMukQaAZBLWpWzdsZpupIxYbAQGhambya_RFfJPbsbBf_CJGj5t44jWT5Su3BL6nQZIGCLJLnXd-zkncLcpqkyC0qBByAn_WP-sSe4LNz6C7cSTOyW97kJepVfIzC7X3xP4oQBbeI1X9jqkzdsbgLeM34sFL_3npueA8n8YJFBOMDTMjAJk6aL4vwqW3NAyTiBOBSiKNRt_ULKwnc3cLczOzhyFPyJB06LZTSVHoUfCTYYtAB5mAUixXYh3TGbJq0KpzRf6ulrub2aYH93QLI2if5Jz_k7TwinqH9m354OkoYKJaQao9nkIllzoCnTLDf6_EKcYjgRojV6Bg",
-      //   { sameSite: "none" }
-      // );
-      if (!structured) overrideStructuredEditor();
-      let data = {
-        AccessToken:
-          "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Im9PdmN6NU1fN3AtSGpJS2xGWHo5M3VfVjBabyJ9.eyJuYW1laWQiOiJlODcyNTZjZi04ZDAyLTYyMzMtODZkNS0xMWZjNDBlMTIyYmQiLCJzY3AiOiJ2c28uY29kZV9tYW5hZ2UiLCJhdWkiOiI2Yjg4NWU5Ni1mZTY1LTQ2N2YtODFiYy0yNjk1MDIyMTFmOTgiLCJhcHBpZCI6ImUxN2Q2ZmQ3LTc3YzItNDBlZS1iNzg3LWJiNjI1ZGNhOTU0OCIsImlzcyI6ImFwcC52c3Rva2VuLnZpc3VhbHN0dWRpby5jb20iLCJhdWQiOiJhcHAudnN0b2tlbi52aXN1YWxzdHVkaW8uY29tIiwibmJmIjoxNTk5MDMxNTIzLCJleHAiOjE1OTkwMzUxMjN9.mUhmuwKq_ES2BtltoaANJ1GYsNDIRpjvUfn8MDQY36jyg93HU2JxFelGT7ayznkLOmARC2tbPtW1ygKVk1aQdA12oLNl8bcIdrDIXEP-ZJQDLFnmi0HkKsVVHAwC-uzlYrl-mtlDy-HeEddpFruWpigUN_NMMMk1M9SUVK55N4c0uiyLdI-EUNgcDNEXWreWh-WyOM80Ot_G3-JKlWu76gPNZfu2NMr-U3i1qTElCCFWDKFaHViAO4YGgca2NiUiSTWT7GdNgvB1-MFoRPhV2v1D4gGR_c3SQL-qQIHcIldK37wOda80Y8A1pOtE39Qlxt2p1F4mPFbqNPu21WducQ",
-        GitParameters: {
-          gitRepoName: gitState.gitRepoName,
-          branchName: getCurrentTimeStamp(),
-          createPullRequest: gitState.isPullRequestNeeded,
-          commitMessage: gitState.commitMessage
-        },
-        ContextConfidenceConfig: {
-          configLines: rowState
-        }
-      };
-      setGitState({ ...gitState, waitingResult: "Submitting..." });
-
-      // $.post(
-      //   "https://rankingselfserve.azurewebsites.net/Git/CommitToGit",
-      //   data,
-      //   function (returnData, status) {
-      //     console.log(status);
-      //     console.log(returnData);
-      //     setGitState({ ...gitState, waitingResult: null });
-      //     setGitState({ ...gitState, commitResult: returnData });
-      //   }
-      // );
-
-      fetch("https://rankingselfserve.azurewebsites.net/Git/CommitToGit", {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: {
-          "Content-type": "application/json; charset=UTF-8"
-        }
-      })
-        .then((response) => response.json())
-        .then((json) => {
-          setGitState({ ...gitState, waitingResult: null });
-          setGitState({ ...gitState, commitResult: json });
-        });
+        setGitState({ ...gitState, waitingResult: "Submitting..." });
+        fetch("https://rankingselfserve.azurewebsites.net/Git/CommitToGit", {
+          method: "POST",
+          body: JSON.stringify(data),
+          headers: {
+            "Content-type": "application/json; charset=UTF-8"
+          }
+        })
+          .then((response) => response.json())
+          .then((json) => {
+            setGitState({ ...gitState, waitingResult: null });
+            setGitState({ ...gitState, commitResult: json });
+            // setGitState({ ...gitState, isCommited: false });
+          });
+      }
     }
+    fetchData();
+    //  return () => {
+    //    setGitState({ ...gitState, commitResult: null });
+    // };
   }, [gitState.isCommited]);
 
   //For tabs in textarea
@@ -452,7 +440,6 @@ export default function AddNew() {
       <br />
       <br />
       <br />
-
       <div className="configLine">
         <label htmlFor="commitMessage">Commit Message</label>
         <input
@@ -523,59 +510,8 @@ export default function AddNew() {
           </label>
         </div>
       </div>
-      <div>{gitState.waitingResult}</div>
-      <div>
-        {gitState.commitResult ? (
-          // <pre>{JSON.stringify(gitState.commitResult, undefined, 4)}</pre>
-          // ) :
-          <>
-            {gitState.commitResult.status.toLowerCase() === "success" ? (
-              <>
-                <label>
-                  CommitMessage:{gitState.commitResult.commitMessage}
-                </label>
-                <br />
-                <label>LatestCommit:{gitState.commitResult.latestCommit}</label>
-                <br />
-                <label>
-                  PullRequest Url:
-                  <a href={gitState.commitResult.pullRequestUrl}>
-                    {gitState.commitResult.pullRequestUrl}
-                  </a>
-                </label>
-                <br />
-                <label>TargetBranch:{gitState.commitResult.targetBranch}</label>
-                <br />
-              </>
-            ) : (
-              <>
-                <label>Error:{gitState.commitResult.error}</label>
-              </>
-            )}
-          </>
-        ) : null}
-      </div>
-      {/* <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <React.Fragment>{JSON.stringify(rowState, null, 2)}</React.Fragment> */}
+      <GitResult state={gitState} />
+      {/* <React.Fragment>{JSON.stringify(rowState, null, 2)}</React.Fragment>  */}
     </>
   );
 }
