@@ -12,20 +12,35 @@ function CreateUUID() {
     return v.toString(16);
   });
 }
+function getCurrentTimeStamp() {
+  let d = new Date();
+  let current_timestamp =
+    d.getDate() +
+    "-" +
+    d.getMonth() +
+    "-" +
+    d.getFullYear() +
+    "_" +
+    d.getHours() +
+    "_" +
+    d.getMinutes() +
+    "_" +
+    d.getSeconds();
+  return current_timestamp;
+}
+function useLocalStorageState(key, defaultValue = "") {
+  const [state, setState] = React.useState(
+    () => JSON.parse(window.localStorage.getItem(key)) ?? defaultValue
+  );
+
+  React.useEffect(() => {
+    window.localStorage.setItem(key, JSON.stringify(state));
+  }, [key, state]);
+
+  return [state, setState];
+}
 
 export default function AddNew() {
-  function useLocalStorageState(key, defaultValue = "") {
-    const [state, setState] = React.useState(
-      () => JSON.parse(window.localStorage.getItem(key)) ?? defaultValue
-    );
-
-    React.useEffect(() => {
-      window.localStorage.setItem(key, JSON.stringify(state));
-    }, [key, state]);
-
-    return [state, setState];
-  }
-
   const initialRowState = [
     { ...constants.defaultRowValues, id: CreateUUID(), iscomment: true },
     { ...constants.defaultRowValues, id: CreateUUID() }
@@ -47,24 +62,11 @@ export default function AddNew() {
 
   const [gitState, setGitState] = useState(constants.gitParams);
 
-  function getCurrentTimeStamp() {
-    let d = new Date();
-    let current_timestamp =
-      d.getDate() +
-      "-" +
-      d.getMonth() +
-      "-" +
-      d.getFullYear() +
-      "_" +
-      d.getHours() +
-      "_" +
-      d.getMinutes() +
-      "_" +
-      d.getSeconds();
-    return current_timestamp;
-  }
-
   useEffect(() => {
+    overrideStructuredEditor();
+  }, [groupState]);
+  useEffect(() => {
+    //async function CommitToGit() {
     if (gitState.isCommited) {
       // POST request using fetch inside useEffect React hook
 
@@ -76,7 +78,7 @@ export default function AddNew() {
 
       let data = {
         AccessToken:
-          "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Im9PdmN6NU1fN3AtSGpJS2xGWHo5M3VfVjBabyJ9.eyJuYW1laWQiOiJlODcyNTZjZi04ZDAyLTYyMzMtODZkNS0xMWZjNDBlMTIyYmQiLCJzY3AiOiJ2c28uY29kZV9tYW5hZ2UiLCJhdWkiOiJjNTg3ZjgyYi02NmRkLTQyNTAtOGQ5ZS0yMzdlYzU1MzNiMjQiLCJhcHBpZCI6ImUxN2Q2ZmQ3LTc3YzItNDBlZS1iNzg3LWJiNjI1ZGNhOTU0OCIsImlzcyI6ImFwcC52c3Rva2VuLnZpc3VhbHN0dWRpby5jb20iLCJhdWQiOiJhcHAudnN0b2tlbi52aXN1YWxzdHVkaW8uY29tIiwibmJmIjoxNTk4OTUwMDc3LCJleHAiOjE1OTg5NTM2Nzd9.NohT3A0Cb3JQAH4o3Zluf-6Q1HudfFQRqs77zt2Dy8xp80iO44_KSKjcLwplHGjk23Ep-m3zGnFLsOb_54kiHWhnHdjUiTeBsqd_osR8m0gKAoIem9mEefcgTvil1ONHZJX9TcGir7XTk3gWueeRdonvFTOv1l2xP2VAB0oE5fqJRQ4NZ7xWtmWEhgelAWbuejNe1745QTxRGe--hAaJZ1nw9QLIBdR2L5kssjVOhuYQBgKocRwMWGm_juC0V1KP4QihkRInu62H5Bilb7eWgBnSlHw1ZdezR7Eyz4oTj_08GV6odvTHrcc72QZ_S0642vwix8iai2uCkuDHzdNUVg",
+          "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Im9PdmN6NU1fN3AtSGpJS2xGWHo5M3VfVjBabyJ9.eyJuYW1laWQiOiJlODcyNTZjZi04ZDAyLTYyMzMtODZkNS0xMWZjNDBlMTIyYmQiLCJzY3AiOiJ2c28uY29kZV9tYW5hZ2UiLCJhdWkiOiJiMTgyNjgwNS05Nzk4LTQ5NzItOTJlYi02MGJmM2UyMTI2YmEiLCJhcHBpZCI6ImUxN2Q2ZmQ3LTc3YzItNDBlZS1iNzg3LWJiNjI1ZGNhOTU0OCIsImlzcyI6ImFwcC52c3Rva2VuLnZpc3VhbHN0dWRpby5jb20iLCJhdWQiOiJhcHAudnN0b2tlbi52aXN1YWxzdHVkaW8uY29tIiwibmJmIjoxNTk5MDI0NDk0LCJleHAiOjE1OTkwMjgwOTR9.O-UP4MTSBXvOxHIZ-Vd09nOxdJqSqWfwwldjQ6CbND5RUCETK3GMxh2JZMGIuNFnSweuJjbiZCt3aXW1K-V2o2Xz-s_jtPEWdiSlbXfINbNA3MOOXAtBQz7Hgz8MH9p1DWJ8Fe4edyGUx16OOFQxP6oru8jh6k6WxId1GdrL0Knvvvd15Lu8077sl5HjXTsw5pnxgrqvpZsbhHAUQHfb-c7rKQMgDi2CrT0ejFpDhBw_xTxXYD89YU_8Z2nBukAdn7HWUdhtl66gcoSBr2gFSG0JK9g_LHYD91NKG2-zC0TYyGR4tYGl_oYpTNnRB74wigOu9eKbf1h1AMCzF7m9sg",
         GitParameters: {
           gitRepoName: gitState.gitRepoName,
           branchName: getCurrentTimeStamp(),
@@ -88,14 +90,30 @@ export default function AddNew() {
         }
       };
       setGitState({ ...gitState, waitingResult: "Submitting..." });
-      $.post(
-        "https://rankingselfserve.azurewebsites.net/Git/CommitToGit",
-        data,
-        function (returnData, status) {
-          setGitState({ ...gitState, waitingResult: null });
-          setGitState({ ...gitState, commitResult: returnData });
+
+      // $.post(
+      //   "https://rankingselfserve.azurewebsites.net/Git/CommitToGit",
+      //   data,
+      //   function (returnData, status) {
+      //     console.log(status);
+      //     console.log(returnData);
+      //     setGitState({ ...gitState, waitingResult: null });
+      //     setGitState({ ...gitState, commitResult: returnData });
+      //   }
+      // );
+
+      fetch("https://rankingselfserve.azurewebsites.net/Git/CommitToGit", {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: {
+          "Content-type": "application/json; charset=UTF-8"
         }
-      );
+      })
+        .then((response) => response.json())
+        .then((json) => {
+          setGitState({ ...gitState, waitingResult: null });
+          setGitState({ ...gitState, commitResult: json });
+        });
     }
   }, [gitState.isCommited]);
 
@@ -479,24 +497,61 @@ export default function AddNew() {
             Create a Pull Request
           </label>
         </div>
+
+        <div className="custom-control custom-switch">
+          <input
+            className="custom-control-input"
+            id={"repo"}
+            name={"repo"}
+            type="checkbox"
+            onChange={() =>
+              gitState.gitRepoName === "ConfigDataDummy"
+                ? setGitState({
+                    ...gitState,
+                    gitRepoName: "SatoriData"
+                  })
+                : setGitState({
+                    ...gitState,
+                    gitRepoName: "ConfigDataDummy"
+                  })
+            }
+            checked={gitState.gitRepoName === "ConfigDataDummy"}
+          />
+
+          <label className="custom-control-label" htmlFor={"repo"}>
+            Repo : {gitState.gitRepoName}
+          </label>
+        </div>
       </div>
       <div>{gitState.waitingResult}</div>
       <div>
         {gitState.commitResult ? (
+          // <pre>{JSON.stringify(gitState.commitResult, undefined, 4)}</pre>
+          // ) :
           <>
-            <label>CommitMessage:{gitState.commitResult.CommitMessage}</label>
-            <br />
-            <label>LatestCommit:{gitState.commitResult.LatestCommit}</label>
-            <br />
-            <label>
-              PullRequest Url:
-              <a href={gitState.commitResult.PullRequestUrl}>
-                {gitState.commitResult.PullRequestUrl}
-              </a>
-            </label>
-            <br />
-            <label>TargetBranch:{gitState.commitResult.TargetBranch}</label>
-            <br />
+            {gitState.commitResult.status.toLowerCase() === "success" ? (
+              <>
+                <label>
+                  CommitMessage:{gitState.commitResult.commitMessage}
+                </label>
+                <br />
+                <label>LatestCommit:{gitState.commitResult.latestCommit}</label>
+                <br />
+                <label>
+                  PullRequest Url:
+                  <a href={gitState.commitResult.pullRequestUrl}>
+                    {gitState.commitResult.pullRequestUrl}
+                  </a>
+                </label>
+                <br />
+                <label>TargetBranch:{gitState.commitResult.targetBranch}</label>
+                <br />
+              </>
+            ) : (
+              <>
+                <label>Error:{gitState.commitResult.error}</label>
+              </>
+            )}
           </>
         ) : null}
       </div>
