@@ -49,7 +49,7 @@ export default function AddNew() {
     {
       ...constants.defaultGroupValues,
       id: CreateUUID(),
-      lines: [{ ...constants.defaultGroupLine, id: CreateUUID() }]
+      lines: [{ ...constants.defaultLine, id: CreateUUID() }]
     }
   ];
   const [groupState, setGroupState] = useLocalStorageState("groupState", [
@@ -62,9 +62,9 @@ export default function AddNew() {
 
   const [gitState, setGitState] = useState(constants.gitParams);
 
-  useEffect(() => {
-    overrideStructuredEditor();
-  }, [groupState]);
+  // useEffect(() => {
+  //   overrideStructuredEditor();
+  // }, [groupState]);
   useEffect(() => {
     //async function CommitToGit() {
     if (gitState.isCommited) {
@@ -75,10 +75,10 @@ export default function AddNew() {
       //   "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Im9PdmN6NU1fN3AtSGpJS2xGWHo5M3VfVjBabyJ9.eyJuYW1laWQiOiJlODcyNTZjZi04ZDAyLTYyMzMtODZkNS0xMWZjNDBlMTIyYmQiLCJzY3AiOiJ2c28uY29kZV9tYW5hZ2UiLCJhdWkiOiI3YWNmYjQzNS00NTM0LTQ3ZDAtYTY4Ny1lMmQyYWFmMmZmZmMiLCJhcHBpZCI6ImUxN2Q2ZmQ3LTc3YzItNDBlZS1iNzg3LWJiNjI1ZGNhOTU0OCIsImlzcyI6ImFwcC52c3Rva2VuLnZpc3VhbHN0dWRpby5jb20iLCJhdWQiOiJhcHAudnN0b2tlbi52aXN1YWxzdHVkaW8uY29tIiwibmJmIjoxNTk4OTM5MzU0LCJleHAiOjE1OTg5NDI5NTR9.jrbgzMqMukQaAZBLWpWzdsZpupIxYbAQGhambya_RFfJPbsbBf_CJGj5t44jWT5Su3BL6nQZIGCLJLnXd-zkncLcpqkyC0qBByAn_WP-sSe4LNz6C7cSTOyW97kJepVfIzC7X3xP4oQBbeI1X9jqkzdsbgLeM34sFL_3npueA8n8YJFBOMDTMjAJk6aL4vwqW3NAyTiBOBSiKNRt_ULKwnc3cLczOzhyFPyJB06LZTSVHoUfCTYYtAB5mAUixXYh3TGbJq0KpzRf6ulrub2aYH93QLI2if5Jz_k7TwinqH9m354OkoYKJaQao9nkIllzoCnTLDf6_EKcYjgRojV6Bg",
       //   { sameSite: "none" }
       // );
-
+      overrideStructuredEditor();
       let data = {
         AccessToken:
-          "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Im9PdmN6NU1fN3AtSGpJS2xGWHo5M3VfVjBabyJ9.eyJuYW1laWQiOiJlODcyNTZjZi04ZDAyLTYyMzMtODZkNS0xMWZjNDBlMTIyYmQiLCJzY3AiOiJ2c28uY29kZV9tYW5hZ2UiLCJhdWkiOiJiMTgyNjgwNS05Nzk4LTQ5NzItOTJlYi02MGJmM2UyMTI2YmEiLCJhcHBpZCI6ImUxN2Q2ZmQ3LTc3YzItNDBlZS1iNzg3LWJiNjI1ZGNhOTU0OCIsImlzcyI6ImFwcC52c3Rva2VuLnZpc3VhbHN0dWRpby5jb20iLCJhdWQiOiJhcHAudnN0b2tlbi52aXN1YWxzdHVkaW8uY29tIiwibmJmIjoxNTk5MDI0NDk0LCJleHAiOjE1OTkwMjgwOTR9.O-UP4MTSBXvOxHIZ-Vd09nOxdJqSqWfwwldjQ6CbND5RUCETK3GMxh2JZMGIuNFnSweuJjbiZCt3aXW1K-V2o2Xz-s_jtPEWdiSlbXfINbNA3MOOXAtBQz7Hgz8MH9p1DWJ8Fe4edyGUx16OOFQxP6oru8jh6k6WxId1GdrL0Knvvvd15Lu8077sl5HjXTsw5pnxgrqvpZsbhHAUQHfb-c7rKQMgDi2CrT0ejFpDhBw_xTxXYD89YU_8Z2nBukAdn7HWUdhtl66gcoSBr2gFSG0JK9g_LHYD91NKG2-zC0TYyGR4tYGl_oYpTNnRB74wigOu9eKbf1h1AMCzF7m9sg",
+          "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Im9PdmN6NU1fN3AtSGpJS2xGWHo5M3VfVjBabyJ9.eyJuYW1laWQiOiJlODcyNTZjZi04ZDAyLTYyMzMtODZkNS0xMWZjNDBlMTIyYmQiLCJzY3AiOiJ2c28uY29kZV9tYW5hZ2UiLCJhdWkiOiI2Yjg4NWU5Ni1mZTY1LTQ2N2YtODFiYy0yNjk1MDIyMTFmOTgiLCJhcHBpZCI6ImUxN2Q2ZmQ3LTc3YzItNDBlZS1iNzg3LWJiNjI1ZGNhOTU0OCIsImlzcyI6ImFwcC52c3Rva2VuLnZpc3VhbHN0dWRpby5jb20iLCJhdWQiOiJhcHAudnN0b2tlbi52aXN1YWxzdHVkaW8uY29tIiwibmJmIjoxNTk5MDMxNTIzLCJleHAiOjE1OTkwMzUxMjN9.mUhmuwKq_ES2BtltoaANJ1GYsNDIRpjvUfn8MDQY36jyg93HU2JxFelGT7ayznkLOmARC2tbPtW1ygKVk1aQdA12oLNl8bcIdrDIXEP-ZJQDLFnmi0HkKsVVHAwC-uzlYrl-mtlDy-HeEddpFruWpigUN_NMMMk1M9SUVK55N4c0uiyLdI-EUNgcDNEXWreWh-WyOM80Ot_G3-JKlWu76gPNZfu2NMr-U3i1qTElCCFWDKFaHViAO4YGgca2NiUiSTWT7GdNgvB1-MFoRPhV2v1D4gGR_c3SQL-qQIHcIldK37wOda80Y8A1pOtE39Qlxt2p1F4mPFbqNPu21WducQ",
         GitParameters: {
           gitRepoName: gitState.gitRepoName,
           branchName: getCurrentTimeStamp(),
