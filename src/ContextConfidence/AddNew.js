@@ -64,11 +64,16 @@ export default function AddNew() {
 
   const [gitState, setGitState] = useState(constants.gitParams);
 
+  // useEffect(() => {
+  //   setStructured(true);
+  //   // if (!structured)
+  //   overrideStructuredEditor();
+  // }, [gitState.isCommited]);
+
   useEffect(() => {
     //async function CommitToGit() {
     function fetchData() {
       if (gitState.isCommited) {
-        if (!structured) overrideStructuredEditor();
         let data = {
           AccessToken:
             "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Im9PdmN6NU1fN3AtSGpJS2xGWHo5M3VfVjBabyJ9.eyJuYW1laWQiOiJlODcyNTZjZi04ZDAyLTYyMzMtODZkNS0xMWZjNDBlMTIyYmQiLCJzY3AiOiJ2c28uY29kZV9tYW5hZ2UiLCJhdWkiOiI0YTNlOWQzOS1mNmE4LTQ4YzQtYjg0Yy03MmU4MDQ3ZGU0MDgiLCJhcHBpZCI6ImUxN2Q2ZmQ3LTc3YzItNDBlZS1iNzg3LWJiNjI1ZGNhOTU0OCIsImlzcyI6ImFwcC52c3Rva2VuLnZpc3VhbHN0dWRpby5jb20iLCJhdWQiOiJhcHAudnN0b2tlbi52aXN1YWxzdHVkaW8uY29tIiwibmJmIjoxNTk5MDQxMTIwLCJleHAiOjE1OTkwNDQ3MjB9.BnRs4IaKuWi6ihdphTgWB_sgtoa_oPPEglYqYpYPzbLvCKRrh2B2LEilgq1msA-_ZT8fxlXtnEouXGPOsvcLZUsUgBonbCRk_BpkHXW0A2Tl8V77fXjUDu8NzNmbXpUq1TaoZwVVwWBKX2naTy_rZmnMB49PYCW0p4VReeJPneOBZ-e1bTzLPvLaCKpV2l5jhhfB82ly6CID7iMJ35C5fkW06ojCHhL9oPjWRNwItiW8tlI9Q3g4zt_2tmyj2FsvuvgO2swSiCq8rIyF8zLAMxUSiCGKRsPwMsLzbQqq3fPQC05BmJ27ohmcMWFUrQ3peBO8EtMNbRTMNnTdoGHaqg",
@@ -79,7 +84,7 @@ export default function AddNew() {
             commitMessage: gitState.commitMessage
           },
           ContextConfidenceConfig: {
-            configLines: rowState
+            configLines: structured ? rowState : grouptoRow(groupState)
           }
         };
 
@@ -124,12 +129,11 @@ export default function AddNew() {
     }
   }, [groupState]);
 
-  //maintain prev row pipelines and group them
-  function overrideTextEditor() {
+  function rowToGroup(row) {
     let final = [];
     let prevRowPipelines = [];
     let temp = null;
-    rowState.forEach((element, i) => {
+    row.forEach((element, i) => {
       if (compare(element.pipelines, prevRowPipelines)) {
         temp.lines = [...temp.lines, { ...element }];
       } else {
@@ -144,11 +148,14 @@ export default function AddNew() {
       prevRowPipelines = [...element.pipelines];
     });
     if (temp) final = [...final, temp];
-    setGroupState(final);
+    return final;
   }
-  function overrideStructuredEditor() {
+  //maintain prev row pipelines and group them
+  // function overrideTextEditor() {}
+
+  function grouptoRow(group) {
     let final = [];
-    groupState.forEach((item) => {
+    group.forEach((item) => {
       let temp = item.lines.map((item2) => {
         return {
           ...item2,
@@ -157,8 +164,9 @@ export default function AddNew() {
       });
       final = [...final, ...temp];
     });
-    setRowState(final);
+    return final;
   }
+  // function overrideStructuredEditor() {}
   function getIndex(items, value, property = "id") {
     for (let i = 0; i < items.length; i++) {
       if (
@@ -387,7 +395,7 @@ export default function AddNew() {
             checked={structured}
             onChange={() => {
               setStructured((c) => true);
-              overrideStructuredEditor();
+              setRowState(grouptoRow(groupState));
             }}
           />
           <label className="headings" htmlFor="structured">
@@ -414,7 +422,7 @@ export default function AddNew() {
             checked={!structured}
             onChange={() => {
               setStructured((c) => false);
-              overrideTextEditor();
+              setGroupState(rowToGroup(rowState));
             }}
           />
           <label className="headings" htmlFor="unstructured">
