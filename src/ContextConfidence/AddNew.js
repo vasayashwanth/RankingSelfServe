@@ -519,6 +519,11 @@ export default function AddNew() {
         </div>
       </div>
       <GitResult state={gitState} />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
       {/* <React.Fragment>{JSON.stringify(rowState, null, 2)}</React.Fragment>  */}
     </>
   );
