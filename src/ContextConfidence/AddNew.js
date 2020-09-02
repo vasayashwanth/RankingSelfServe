@@ -49,7 +49,7 @@ export default function AddNew() {
     {
       ...constants.defaultGroupValues,
       id: CreateUUID(),
-      lines: [{ ...constants.defaultLine, id: CreateUUID() }]
+      lines: [{ ...constants.defaultGroupLine, id: CreateUUID() }]
     }
   ];
   const [groupState, setGroupState] = useLocalStorageState("groupState", [

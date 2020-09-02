@@ -9,7 +9,18 @@ export const textBoxes = [
 ];
 export const commentIdentifier = ";";
 export const commentTextBoxes = ["comment"];
-export const defaultLine = {
+export const defaultGroupLine = {
+  id: "",
+  market: null,
+  context: null,
+  predicate: null,
+  language: null,
+  confidence: null,
+  contextname: null,
+  iscomment: false,
+  comment: commentIdentifier
+};
+export const defaultRowLine = {
   id: "",
   market: "*",
   context: 123,
@@ -21,14 +32,14 @@ export const defaultLine = {
   comment: commentIdentifier
 };
 export const defaultRowValues = {
-  ...defaultLine,
+  ...defaultRowLine,
   pipelines: [...allPipelines]
 };
 
 export const defaultGroupValues = {
   id: "",
   pipelines: [...allPipelines],
-  lines: [defaultLine]
+  lines: [defaultGroupLine]
 };
 
 export const gitParams = {

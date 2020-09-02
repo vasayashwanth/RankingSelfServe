@@ -9,7 +9,7 @@ export default function InputText(props) {
         className="input-text-field class2"
         id={props.id}
         size={
-          props.data === null
+          props.data === null || props.data === "undefined"
             ? 10
             : Math.max(10, props.data.toString().length + 1)
         }
